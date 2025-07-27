@@ -123,7 +123,7 @@ This will:
 
 ## Example Execution
 
-```bash
+```terminal
 > python youtube_downloader.py
 Enter the YouTube video URL: https://youtu.be/iv-5mZ_9CPY?si=c6vYYg4B9WVDO_vP        
                                                                           
