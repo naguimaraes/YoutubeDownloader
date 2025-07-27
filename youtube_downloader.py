@@ -108,15 +108,25 @@ def get_downloads_folder():
 # Utility Functions
 def format_filesize(bytesize):
     """
-    Convert bytes to MB with 2 decimal places.
+    Convert bytes to appropriate unit (MB or GB) with 2 decimal places.
     
     Args:
         bytesize (int): Size in bytes
         
     Returns:
-        str: Formatted size string (e.g., "125.50 MB")
+        str: Formatted size string (e.g., "125.50 MB" or "1.25 GB")
     """
-    return f"{round(bytesize / (1024 * 1024), 2)} MB" if bytesize else "Unknown"
+    if not bytesize:
+        return "Unknown"
+    
+    # Convert to GB if size is 1 GB or larger
+    gb_size = bytesize / (1024 * 1024 * 1024)
+    if gb_size >= 1.0:
+        return f"{round(gb_size, 2)} GB"
+    else:
+        # Convert to MB for smaller sizes
+        mb_size = bytesize / (1024 * 1024)
+        return f"{round(mb_size, 2)} MB"
 
 
 def format_duration(seconds):
@@ -277,7 +287,10 @@ def list_formats(url, loading_animation=None):
             filtered.sort(key=lambda x: (-x.get('height', 0), x.get('filesize', 0)))
 
             # Display video information
-            print(f"\nTitle: {info.get('title')}")
+            print(f"Title: {info.get('title')}")
+            channel = info.get('uploader') or info.get('channel')
+            if channel:
+                print(f"Channel: {channel}")
             duration = info.get('duration')
             if duration:
                 print(f"Duration: {format_duration(duration)}")
@@ -365,6 +378,25 @@ def download_selected_format(url, format_id):
     """
     downloads_path = get_downloads_folder()
     
+    # Animation control variables
+    merging_animation = None
+    
+    def progress_hook(d):
+        """Hook to track download progress and show merging animation."""
+        nonlocal merging_animation
+        
+        if d['status'] == 'downloading':
+            # Stop any existing animation during download
+            if merging_animation:
+                merging_animation.stop()
+                merging_animation = None
+        elif d['status'] == 'finished':
+            # Show merging animation when starting to merge
+            if not merging_animation:
+                print()  # Add spacing
+                merging_animation = LoadingAnimation("Merging video and audio")
+                merging_animation.start()
+    
     # Configure yt-dlp options for video download
     ydl_opts = {
         'quiet': True,  # Suppress intermediate output
@@ -375,7 +407,8 @@ def download_selected_format(url, format_id):
         'postprocessor_args': [
             '-c:v', 'copy',  # Keep video without re-encoding (faster)
             '-c:a', 'aac'    # Convert audio to AAC (compatible)
-        ]
+        ],
+        'progress_hooks': [progress_hook]  # Add progress hook for animations
     }
 
     # Create download directory if it doesn't exist
@@ -385,8 +418,16 @@ def download_selected_format(url, format_id):
         try:
             print(f"\nDownloading format {format_id} to: {downloads_path}")
             ydl.download([url])
+            
+            # Stop merging animation if it's running
+            if merging_animation:
+                merging_animation.stop()
+            
             print("\nDownload complete!")
         except Exception as e:
+            # Stop animation on error
+            if merging_animation:
+                merging_animation.stop()
             print(f"\nDownload failed: {e}")
 
 
@@ -400,6 +441,25 @@ def download_selected_audio(url, format_id):
     """
     downloads_path = get_downloads_folder()
     
+    # Animation control variables
+    converting_animation = None
+    
+    def progress_hook(d):
+        """Hook to track download progress and show converting animation."""
+        nonlocal converting_animation
+        
+        if d['status'] == 'downloading':
+            # Stop any existing animation during download
+            if converting_animation:
+                converting_animation.stop()
+                converting_animation = None
+        elif d['status'] == 'finished':
+            # Show converting animation when starting to convert
+            if not converting_animation:
+                print()  # Add spacing
+                converting_animation = LoadingAnimation("Converting to MP3")
+                converting_animation.start()
+    
     # Configure yt-dlp options for audio download
     ydl_opts = {
         'quiet': True,  # Suppress intermediate output
@@ -411,6 +471,7 @@ def download_selected_audio(url, format_id):
             'preferredcodec': 'mp3',  # Convert to MP3
             'preferredquality': '192',  # Set MP3 quality to 192 kbps
         }],
+        'progress_hooks': [progress_hook]  # Add progress hook for animations
     }
 
     # Create download directory if it doesn't exist
@@ -420,13 +481,47 @@ def download_selected_audio(url, format_id):
         try:
             print(f"\nDownloading audio format {format_id} to: {downloads_path}")
             ydl.download([url])
+            
+            # Stop converting animation if it's running
+            if converting_animation:
+                converting_animation.stop()
+            
             print("\nAudio download complete!")
         except Exception as e:
+            # Stop animation on error
+            if converting_animation:
+                converting_animation.stop()
             print(f"\nAudio download failed: {e}")
 
 
 def download_audio_only(url):
+    """
+    Download the best available audio and convert to MP3.
+    
+    Args:
+        url (str): YouTube video URL
+    """
     downloads_path = get_downloads_folder()
+    
+    # Animation control variables
+    converting_animation = None
+    
+    def progress_hook(d):
+        """Hook to track download progress and show converting animation."""
+        nonlocal converting_animation
+        
+        if d['status'] == 'downloading':
+            # Stop any existing animation during download
+            if converting_animation:
+                converting_animation.stop()
+                converting_animation = None
+        elif d['status'] == 'finished':
+            # Show converting animation when starting to convert
+            if not converting_animation:
+                print()  # Add spacing
+                converting_animation = LoadingAnimation("Converting to MP3")
+                converting_animation.start()
+    
     ydl_opts = {
         'quiet': True,  # Suppress intermediate output
         'no_warnings': True,  # Suppress warnings
@@ -437,14 +532,23 @@ def download_audio_only(url):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
+        'progress_hooks': [progress_hook]  # Add progress hook for animations
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
             print(f"\nDownloading audio to: {downloads_path}")
             ydl.download([url])
+            
+            # Stop converting animation if it's running
+            if converting_animation:
+                converting_animation.stop()
+            
             print("\nAudio download complete!")
         except Exception as e:
+            # Stop animation on error
+            if converting_animation:
+                converting_animation.stop()
             print(f"\nAudio download failed: {e}")
 
 def main():
