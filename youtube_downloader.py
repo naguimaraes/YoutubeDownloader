@@ -1,11 +1,11 @@
 """
-YouTube Downloader - Cross-platform YouTube video and audio downloader
+YouTube Downloader - Windows YouTube video and audio downloader
 Built with Python and yt-dlp
 
 Features:
 - Download YouTube videos in various quality options (720p and above)
 - Download audio-only in MP3 format
-- Cross-platform support (Windows, Ubuntu/Linux, macOS)
+- Windows support
 - Animated loading indicators
 - Clean, formatted output tables
 - Automatic dependency checking
@@ -16,7 +16,6 @@ import sys
 import time
 import threading
 import argparse
-import platform
 import subprocess
 from pathlib import Path
 import yt_dlp
@@ -70,7 +69,7 @@ class LoadingAnimation:
 def check_dependencies():
     """
     Check if required dependencies (yt-dlp and ffmpeg) are available.
-    Provides installation instructions for missing dependencies based on the OS.
+    Provides installation instructions for missing dependencies on Windows.
     """
     # Check for yt-dlp library
     try:
@@ -78,11 +77,7 @@ def check_dependencies():
     except ImportError:
         print("Error: yt-dlp is not installed.")
         print("Please install it using:")
-        if platform.system().lower() == "windows":
-            print("  pip install yt-dlp")
-        else:
-            print("  pip3 install yt-dlp")
-            print("  or: sudo apt install yt-dlp  (on Ubuntu/Debian)")
+        print("  pip install yt-dlp")
         sys.exit(1)
     
     # Check for ffmpeg (required for audio conversion and video merging)
@@ -95,44 +90,19 @@ def check_dependencies():
         print("Warning: ffmpeg is not installed or not in PATH.")
         print("Audio conversion may not work properly.")
         print("To install ffmpeg:")
-        system = platform.system().lower()
-        if system == "windows":
-            print("  Download from: https://ffmpeg.org/download.html")
-            print("  Or use: winget install ffmpeg")
-        elif system == "linux":
-            print("  sudo apt install ffmpeg  (Ubuntu/Debian)")
-            print("  sudo dnf install ffmpeg  (Fedora)")
-            print("  sudo pacman -S ffmpeg    (Arch)")
-        elif system == "darwin":
-            print("  brew install ffmpeg")
+        print("  Download from: https://ffmpeg.org/download.html")
+        print("  Or use: winget install ffmpeg")
         print()
 
 def get_downloads_folder():
     """
-    Get the appropriate downloads folder based on the operating system.
+    Get the Windows downloads folder path.
     
     Returns:
         str: Path to the downloads folder where files will be saved
     """
-    system = platform.system().lower()
-    
-    if system == "windows":
-        # Windows: Use Downloads/Youtube Downloads
-        return str(Path.home() / "Downloads" / "Youtube Downloads")
-    elif system == "linux":
-        # Linux: Use Downloads/Youtube Downloads or create in home if Downloads doesn't exist
-        downloads_path = Path.home() / "Downloads"
-        if downloads_path.exists():
-            return str(downloads_path / "Youtube Downloads")
-        else:
-            # Fallback to home directory if Downloads doesn't exist
-            return str(Path.home() / "Youtube Downloads")
-    elif system == "darwin":  # macOS
-        # macOS: Use Downloads/Youtube Downloads
-        return str(Path.home() / "Downloads" / "Youtube Downloads")
-    else:
-        # Fallback for other systems
-        return str(Path.home() / "Youtube Downloads")
+    # Windows: Use Downloads/Youtube Downloads
+    return str(Path.home() / "Downloads" / "Youtube Downloads")
 
 
 # Utility Functions
@@ -490,7 +460,7 @@ def main():
     parser = argparse.ArgumentParser(
         description='Download YouTube videos or audio',
         epilog='Examples:\n'
-               '  python youtube_downloader.py                 # Download video\n'
+               '  python youtube_downloader.py                  # Download video\n'
                '  python youtube_downloader.py --audio-only     # Download audio only',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
