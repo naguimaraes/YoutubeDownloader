@@ -1,31 +1,31 @@
 # YouTube Downloader
 
-A cross-platform YouTube video and audio downloader built with Python and yt-dlp.
+A cross-platform DIY (Do It Yourself) YouTube video and audio downloader built with Python and yt-dlp made in one night. This project was created to provide a simple solution for downloading YouTube content without relying on the currently available websites, that often require subscriptions or are filled with ads and scams.
 
 ## Features
 
-- Download YouTube videos in various quality options (720p and above)
-- Download audio-only in MP3 format
-- Cross-platform support (Windows, Ubuntu/Linux, macOS)
-- Animated loading indicators
-- Clean, formatted output tables
-- Automatic dependency checking
-- Refactored, well-documented code
+- Allow the user to choose video/audio quality;
+- Shows estimated file size for downloads;
+- Cross-platform support (Windows, Linux, macOS).
 
 ## Quick Start
 
 ### Automatic Installation (Recommended)
 
-1. Download or clone this repository
+1. Download or clone this repository and navigate to the project directory:
+
+   ```bash
+   git clone https://github.com/naguimaraes/YoutubeDownloader.git
+   cd YoutubeDownloader
+   ```
+
 2. Run the automatic dependency installer:
 
    ```bash
    python install_dependencies.py
    ```
 
-   This will automatically install all required dependencies for your operating system.
-
-3. Run the downloader:
+3. Run the main script:
 
    ```bash
    python youtube_downloader.py
