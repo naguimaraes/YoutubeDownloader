@@ -126,9 +126,9 @@ This will:
 ```bash
 > python youtube_downloader.py
 Enter the YouTube video URL: https://youtu.be/iv-5mZ_9CPY?si=c6vYYg4B9WVDO_vP        
-                                                                                     
-
+                                                                          
 Title: But how do AI videos actually work? | Guest video by @WelchLabsVideo
+Channel: 3Blue1Brown
 Duration: 39:48
 
 +----+------------+--------+----------+-----------+----------------+
