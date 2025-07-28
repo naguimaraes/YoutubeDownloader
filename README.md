@@ -1,6 +1,6 @@
 # YouTube Downloader
 
-A DIY YouTube video and audio downloader for Windows built with Python made in one night. Basically works as a `yt-dlp` wrapper with friendly interface and easy use.This project was created to provide a simple solution for downloading YouTube content without relying on the currently available websites, that often require subscriptions or are filled with ads and scams.
+A DIY YouTube video and audio downloader for Windows built with Python made in one night. Basically works as a `yt-dlp` wrapper with friendly interface and easy use. This project was created to provide a simple solution for downloading YouTube content without relying on the currently available websites, that often require subscriptions or are filled with ads and scams.
 
 ## Features
 
